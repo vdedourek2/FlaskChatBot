@@ -1,69 +1,103 @@
-# An-AI-Chatbot-in-Python-and-Flask
-An AI Chatbot using Python and Flask REST API 
+An AI Chatbot-Multima using Python and Flask
+
+![Mína](Mína.png)
 
 ## Requirements (libraries)
-1. TensorFlow
-1. Flask
-
-## VsCode SetUp
-1. Clone the repository-> cd into the cloned repository folder
-2. Create a python virtual environment 
-```
-# macOS/Linux
-# You may need to run sudo apt-get install python3-venv first
-python3 -m venv .venv
-
-# Windows
-# You can also use py -3 -m venv .venv
-python -m venv .venv
-```
-When you create a new virtual environment, a prompt will be displayed to allow you to select it for the workspace.
-
-3. Activate the virtual environment
-```
-#linux
-source ./venv/bin/activate  # sh, bash, or zsh
-
-#windows
-.\venv\Scripts\activate
-```
-4. Run ```pip install --upgrade tensorflow``` to install ```Tensorflow```
-5. Run ```pip install -U nltk``` to install ```nltk```
-6. Run ```pip install -U Flask``` to install ```flask```
-7. To expose your bot via Ngrok, run ```pip install flask-ngrok``` to install ```flask-ngrok``` Then you'll need to configure your ngrok credentials(login: email + password) Then uncomment this line ```run_with_ngrok(app) ``` and comment the last two lines ```if __name__ == "__main__": app.run() ``` Notice that ngrok is not used by default.
-8. To access your bot on localhost, go to ```http://127.0.0.1:5000/ ``` If you're on Ngrok your url will be ```some-text.ngrok.io```
-
-### Step-By-Step Explanation and Installation Guide
-> https://dentricedev.com/blog/how-to-create-an-ai-chatbot-in-python-and-flask-gvub
-> 
-> https://dev.to/dennismaina/how-to-create-an-ai-chatbot-in-python-and-flask-1c3m
-### Execution
-To run this Bot, first run the ```train.py``` file to train the model. This will generate a file named ```chatbot_model.h5```<br>
-This is the model which will be used by the Flask REST API to easily give feedback without the need to retrain.<br>
-After running ```train.py```, next run the ```app.py``` to initialize and start the bot.<br>
-To add more terms and vocabulary to the bot, modify the ```intents.json``` file and add your personalized words and retrain the model again.
+1. Flask - framework for web application
+2. OpenAI - ChatBot GPT API
+3. python-decouple - processing environment variable
+4. uuid - work with uuid
+5. socket - to get web user information
+6. langdetect - language detection from a text
+7. deep-translator - language translator
+8. transformers - GPT2 tokenizer
+9. Qdrant - Qdrant vector database
+10. pandas - Dataframe framework
+11. gunicorn - LINUX server for web application running
 
 
-<!-- Actual text -->
-## Find me on
-[![Twitter][1.2]][1]  [![LinkedIn][2.2]][2]
+![Structure](structure.png)
 
-<!-- Icons -->
+## Visual Studio SetUp
+1. Create solution PythonApplication
+2. Create Project PythonFlask
+3. Create a python virtual environment 
 
-[1.2]: http://i.imgur.com/wWzX9uB.png (Twitter)
-[2.2]: https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/linkedin-3-16.png (LinkedIn)
+Run ```pip install -U Flask``` to install ```flask```
 
-<!-- Links to my social media accounts -->
-[1]: https://twitter.com/dennisjmaina
-[2]: https://www.linkedin.com/in/dennismaina/
-[3]: https://instagram.com/denno.h_
+Run ```pip install -U openai``` to install ```openai```
 
-## Having troubles implementing?
- > Reach out to me maina@dentricedev.com 
- I will be happy to assist 
-# 
-## want something improved or added?
-  > Fork the repo @ [GitHub](https://github.com/mainadennis/An-AI-Chatbot-in-Python-and-Flask).
-# 
+Run ```pip install -U python-decouple``` to install ```decouple```
+
+Run ```pip install -U uuid``` to install ```uuid```
+
+Run ```pip install -U langdetect``` to install ```langdetect```
+
+Run ```pip install -U deep-translator``` to install ```deep-translator```
+
+Run ```pip install -U transformers``` to install ```transformers```
+
+Run ```pip install -U qdrant-client``` to install ```Qdrant```
+
+Run ```pip install -U pandas``` to install ```pandas```
+
+Run ```pip install -U gunicorn``` to install ```gunicorn```
+
+4. Create requirements.txt from virtual environment.
+
+5. Add solution to source Control (GitHub. Repository = PythonApplication)
+6. To expose your bot via Ngrok, run ```pip install flask-ngrok``` to install ```flask-ngrok``` Then you'll need to configure your ngrok credentials(login: email + password) Then uncomment this line ```run_with_ngrok(app) ``` and comment the last two lines ```if __name__ == "__main__": app.run() ``` Notice that ngrok is not used by default.
+7. To access your bot on localhost, go to ```http://127.0.0.1:5000/ ``` If you're on Ngrok your url will be ```some-text.ngrok.io```
+
+
+## GitHub SetUp
+Repository PythonApplication is created from VisualStudio.
+
+https://github.com/vdedourek2
+
+Create PythonFlask repository and copy from PythonFlask project.
+Delete setup.ini file in FlaskRepository. Delete pywin32 from requirements.txt.
+
+
+
+## Qdrant setup
+https://cloud.qdrant.io/
+
+Create cluster with vector database 1536 dimension in Qdrant cloud. Get URL and API_KEY.
+
+
+
+## Render setup
+https://dashboard.render.com/
+
+Create Web service from GitHub repository PythonFlask.
+
+SetUp environment variables:
+
+QDRANT_URL=
+
+QDRANT_API_KEY=
+
+OPENAI_API_TYPE=azure
+
+OPENAI_API_BASE=
+
+OPENAI_API_VERSION=
+
+OPENAI_API_KEY=
+
+PYTHON_VERSION=3.11.2
+
+![File](file.png)
+
+Push button Manual Deploy.
+
+Application is accesible on https://chatbot-multima.onrender.com
+
+
+## Acces on web
+
+https://chatbot-multima.onrender.com
+
 ## Regards,
- > [DentriceDev Solutions](https://dentricedev.com).
+ > [Multima a.s.](https://www.multima.cz/).
