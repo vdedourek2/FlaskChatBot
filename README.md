@@ -1,6 +1,13 @@
 An AI Chatbot-Multima using Python and Flask
 
-![Mína](Mína.png)
+![Chatbot](Chatbot.png)
+
+## An AI Chatbot Multima
+Chatbot uses data from www.multima.cz. The primary data is in Czech, but the chatbot communicates in all languages. It only supports simple query/response communication. It recognizes the language of the question and tries to answer in the same language.
+
+
+![Chatbot](ChatbotFlow.png)
+
 
 ## Requirements (libraries)
 1. Flask - framework for web application
@@ -95,9 +102,11 @@ Push button Manual Deploy.
 Application is accesible on https://chatbot-multima.onrender.com
 
 
-## Acces on web
+## Access on web
 
 https://chatbot-multima.onrender.com
+
+![Chatbot Talking](ChatbotTalking.png)
 
 ## Regards,
  > [Multima a.s.](https://www.multima.cz/).
