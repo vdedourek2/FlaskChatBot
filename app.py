@@ -24,9 +24,7 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 def home():
 
     hostname = socket.gethostname()
- 
     print(f"Started Hostname: {hostname} IP Address: {socket.gethostbyname(hostname)} time: {datetime.utcnow()}")
- 
     q.user_history_cleaning()   # cleaning user history
 
     return render_template("index.html")
@@ -34,10 +32,13 @@ def home():
 
 @app.route("/get", methods=["POST"])
 def chatbot_response():
+    print("Dotaz zahájen")
     msg = request.form["msg"]
     id  = request.form["session_id"]
     hostname = socket.gethostname()
     req_time = datetime.utcnow()
+    print(f"Dotaz: {msg}")
+    
     print(f"get id: {id} pc: {hostname} time: {req_time}")
 
     res = getResponse(msg, id)
