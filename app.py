@@ -34,6 +34,7 @@ def home():
 
 @app.route("/get", methods=["POST"])
 def chatbot_response():
+    '''    
     msg = request.form["msg"]
     id  = request.form["session_id"]
     hostname = socket.gethostname()
@@ -42,6 +43,8 @@ def chatbot_response():
 
     res = getResponse(msg, id)
     print(f"Odpověď: {res}")
+    '''
+    res = "Testovaci odpoved"
     return res
 
 def getResponse(question, id):
