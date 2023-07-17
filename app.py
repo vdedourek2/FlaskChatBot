@@ -34,9 +34,13 @@ def home():
 def chatbot_response():
     print("Dotaz zahájen")
     msg = request.form["msg"]
+    print(msg)
     id  = request.form["session_id"]
+    print(id)
     hostname = socket.gethostname()
+    print(hostname)
     req_time = datetime.utcnow()
+    print(req_time)
     print(f"Dotaz: {msg}")
     
     print(f"get id: {id} pc: {hostname} time: {req_time}")
