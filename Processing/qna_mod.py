@@ -89,13 +89,13 @@ class QnA(object):
         load_dotenv()
         colorama.init()
 
-        openai.api_type = os.environ["OPENAI_API_TYPE"]
-        openai.api_base = os.environ["OPENAI_API_BASE"]
-        openai.api_version = os.environ["OPENAI_API_VERSION"]
-        openai.api_key = os.environ["OPENAI_API_KEY"]
+        openai.api_type = os.getenv("OPENAI_API_TYPE")
+        openai.api_base = os.getenv("OPENAI_API_BASE")
+        openai.api_version = os.getenv("OPENAI_API_VERSION")
+        openai.api_key = os.getenv("OPENAI_API_KEY")
 
         # creating chat object
-        if os.environ["OPENAI_API_TYPE"] == "azure":
+        if os.getenv("OPENAI_API_TYPE") == "azure":
             self.chat = AzureChatOpenAI(
                                 deployment_name="chat",
                                 model_name="gpt-3.5-turbo",
@@ -104,7 +104,7 @@ class QnA(object):
             self.chat = ChatOpenAI(
                                 model_name="gpt-3.5-turbo",
                                 temperature=0,
-                                openai_api_key=os.environ["OPENAI_API_KEY"])
+                                openai_api_key=os.getenv("OPENAI_API_KEY"))
 
 
         template_depends = """
@@ -121,8 +121,8 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
 
         # open Qdrant database
         self.qdrant_client = QdrantClient(
-            url=os.environ["QDRANT_URL"], 
-            api_key=os.environ["QDRANT_API_KEY"],
+            url=os.getenv("QDRANT_URL"), 
+            api_key=os.getenv("QDRANT_API_KEY"),
         ) 
 
 
@@ -252,7 +252,7 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
         """
 
         # Get the embeddings for the question
-        if os.environ["OPENAI_API_TYPE"] == "azure":
+        if os.getenv("OPENAI_API_TYPE") == "azure":
             engine = "ada"
         else:
             engine = "text-embedding-ada-002"
