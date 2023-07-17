@@ -11,7 +11,7 @@ from Processing.qna_mod import QnA
 #project     = "www.multima.cz"      # project name
 project     = "www.portalvs.sk"
 max_tokens  = 500  # maximum tokens in chunk of text (not modify)
-q = QnA(project = project, maxs = max_tokens, is_qa = True)
+q = QnA(project = project, maxs = max_tokens, is_qa = False)
 
 app = Flask(__name__)
 
@@ -24,7 +24,9 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 def home():
 
     hostname = socket.gethostname()
+ 
     print(f"Started Hostname: {hostname} IP Address: {socket.gethostbyname(hostname)} time: {datetime.utcnow()}")
+ 
     q.user_history_cleaning()   # cleaning user history
 
     return render_template("index.html")
@@ -32,20 +34,14 @@ def home():
 
 @app.route("/get", methods=["POST"])
 def chatbot_response():
-    print("Dotaz zahájen")
     msg = request.form["msg"]
-    print(msg)
     id  = request.form["session_id"]
-    print(id)
     hostname = socket.gethostname()
-    print(hostname)
     req_time = datetime.utcnow()
-    print(req_time)
-    print(f"Dotaz: {msg}")
-    
-    print(f"get id: {id} pc: {hostname} time: {req_time}")
+    print(f"Dotaz id: {id} pc: {hostname} time: {req_time}")
 
     res = getResponse(msg, id)
+    print(f"Odpověď: {res}")
     return res
 
 def getResponse(question, id):
