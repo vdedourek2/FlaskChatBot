@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 load_dotenv()
 
-app.secret_key = os.environ["FLASK_SECRET_KEY"]
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 #run_with_ngrok(app) 
 
 @app.route("/")
