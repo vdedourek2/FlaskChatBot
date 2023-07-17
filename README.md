@@ -95,10 +95,9 @@ Repository PythonApplication is created from VisualStudio.
 
 https://github.com/vdedourek2
 
-Create PythonFlask repository and copy from PythonFlask project.
-Delete setup.ini file in FlaskRepository. Delete pywin32 from requirements.txt.
-
-
+Create **PythonFlask** repository and copy from PythonFlask project.
+Delete env. file in FlaskRepository.
+Delete pywin32 from requirements.txt.
 
 ## Qdrant setup
 https://cloud.qdrant.io/
@@ -130,6 +129,10 @@ PYTHON_VERSION=3.11.2
 Push button Manual Deploy.
 
 Application is accesible on https://chatbot-multima.onrender.com
+
+When you get error
+bash: gunicorn: command not found)
+then you have to install gunicorn library to requirments.txt
 
 
 ## Access on web
