@@ -34,10 +34,9 @@ def home():
 
 @app.route("/get", methods=["POST"])
 def chatbot_response():
-    '''    
+  
     msg = request.form["msg"]
     id  = request.form["session_id"]
-    '''    
     
     hostname = socket.gethostname()
     req_time = datetime.utcnow()
