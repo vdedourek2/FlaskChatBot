@@ -41,7 +41,7 @@ def chatbot_response():
     hostname = socket.gethostname()
     req_time = datetime.utcnow()
 
-    print(f"Dotaz id: {id} pc: {hostname} time: {req_time} \n {msh}")
+    print(f"Dotaz id: {id} pc: {hostname} time: {req_time} \n {msg}")
     res = getResponse(msg, id)
     print(f"Odpověď: {res}")
 
