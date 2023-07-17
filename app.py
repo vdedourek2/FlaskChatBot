@@ -11,7 +11,7 @@ from Processing.qna_mod import QnA
 #project     = "www.multima.cz"      # project name
 project     = "www.portalvs.sk"
 max_tokens  = 500  # maximum tokens in chunk of text (not modify)
-q = QnA(project = project, maxs = max_tokens, is_qa = False)
+q = QnA(project = project, maxs = max_tokens, is_qa = True)
 
 app = Flask(__name__)
 
