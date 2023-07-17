@@ -19,7 +19,8 @@
         </div>
         <div id="userInput" class="row">
             <div class="col-md-10">
-                <input id="text" type="text" name="msg" placeholder="Message" class="form-control">
+                <input id="text" type="text" name="msg" placeholder="Zpráva" class="form-control">
+                <input id="session_id" type="hidden" name="session_id" class="form-control">
                 <button type="submit" id="send" class="btn btn-warning">Odešlete</button>
             </div>
         </div>
@@ -28,9 +29,16 @@
 </div>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
+        // Generate a UUID for the session ID
+        var uuid = generateUUID();
+
+        // Set the value of session_id input to the generated UUID
+        $("#session_id").val(uuid);
+
         $("form").on("submit", function(event) {
             var rawText = $("#text").val();
+            var rawID = $("#session_id").val();
             var userHtml = '<p class="userText"><span>' + rawText + "</span></p>";
             $("#text").val("");
             $("#chatbox").append(userHtml);
@@ -41,6 +49,7 @@
             $.ajax({
                 data: {
                     msg: rawText,
+                    session_id: rawID,
                 },
                 type: "POST",
                 url: "/get",
@@ -54,6 +63,18 @@
             });
             event.preventDefault();
         });
+
+        // Function to generate a UUID
+        function generateUUID() {
+            var dt = new Date().getTime();
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = (dt + Math.random() * 16) % 16 | 0;
+                dt = Math.floor(dt / 16);
+                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            return uuid;
+        }
+
     });
 </script>
 </body>
