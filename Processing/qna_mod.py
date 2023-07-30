@@ -1,3 +1,4 @@
+# encoding: utf-8
 # Building a question answer system with your embeddings - using ChatCompletion
 # https://platform.openai.com/docs/tutorials/web-qa-embeddings
 
@@ -44,6 +45,7 @@ class QnA(object):
     ### Class for question answer system
     ------------------------------------
     #   project - project name
+    #   original_language - original language qdrant text data
     #   maxs - maximum tokens in segment (chunk)
     #   minc - minimum tokens in context
     #   maxc - maximum tokens in context
@@ -54,6 +56,7 @@ class QnA(object):
     '''
     def __init__(self,
         project:str,
+        original_language:str = "cs",
         maxs:int = 500,
         minc:int = 1000,
         maxc:int = 2000,
@@ -66,6 +69,7 @@ class QnA(object):
         st = time.time()
         
         self.collection = project       # name of collection in Qdrant database
+        self.original_language = original_language
         self.maxs = maxs                # maximum tokens in chunk
         self.minc = minc                # minimum tokens in context
         self.maxc = maxc                # maximum tokens in context
@@ -141,7 +145,7 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
 
         # detection of the question language
         # there are assumption that is cs. On other side is made language detection
-        language = "cs"
+        language = self.original_language
         cs_question = GoogleTranslator(source='auto', target=language).translate(question) 
         if cs_question != question:
             language = detect(question)
@@ -259,8 +263,8 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
 
         # create question for embedding in original language
         emb_question = question
-        if language != "cs":
-            emb_question = GoogleTranslator(source=language, target="cs").translate(question)  
+        if language != self.original_language:
+            emb_question = GoogleTranslator(source=language, target=self.original_language).translate(question)  
 
         # get embeddings vector
         self.question_embeddings = openai.Embedding.create(input=emb_question, engine=engine)['data'][0]['embedding']
@@ -284,6 +288,13 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
 
 
         returns = self.agregate_context(result, max_len)
+        if len(returns) == 0:
+            failure = "Pre zadanou otázku nemám k dispozici žiadnou informaci. Zkuste změnit formulaci."
+            if language!= "cs":
+                failure = GoogleTranslator(source="cs", target=language).translate(failure)
+            return (failure, "")
+
+
         context = "\n\n###\n\n".join(returns)
 
         # If debug, print the raw model response
@@ -292,7 +303,7 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
             print("\n\n")
 
         # Return the context
-        return context
+        return ("", context)
 
     def question_depends(self,
         question:str,
@@ -428,12 +439,15 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
                 context_question += qa_record[0] + "\n"
         context_question += question
 
-        context = self.create_context_from_db(
+        failure, context = self.create_context_from_db(
             question = context_question,
             language = language,     #question language
             max_len=nc,
             debug = debug,
         )
+
+        if failure != "":
+            return failure
 
         # creating prompt messages
         system_content = prompt_frame + context
