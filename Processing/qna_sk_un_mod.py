@@ -131,8 +131,9 @@ class QnA(object):
         if os.getenv("OPENAI_API_TYPE") == "azure":
             self.chat = AzureChatOpenAI(
                                 deployment_name="chat",
+                                model_name="gpt-3.5-turbo-16k",
                                 #model_name="gpt-3.5-turbo",
-                                model_name="gpt-4",
+                                #model_name="gpt-4",
                                 temperature=0)
 
             self.ada_engine = "ada"                         # engine for embeddings
@@ -140,7 +141,8 @@ class QnA(object):
         else:
             self.chat = ChatOpenAI(
                                 #model_name="gpt-3.5-turbo",
-                                model_name="gpt-4",
+                                #model_name="gpt-4",
+                                model_name="gpt-3.5-turbo-16k",
                                 temperature=0,
                                 openai_api_key=os.getenv("OPENAI_API_KEY"))
 
