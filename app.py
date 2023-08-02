@@ -14,7 +14,8 @@ project     = "www.portalvs.sk"
 max_tokens  = 500  # maximum tokens in chunk of text (not modify)
 debug_flag = [DebugFlag.Question, DebugFlag.Answer, DebugFlag.Time, DebugFlag.Context, DebugFlag.Params, DebugFlag.Headings]
 
-q = QnA(project = project, original_language = "sk", maxs = max_tokens, is_qa = True, debug_flag = debug_flag)
+q = QnA(project = project, original_language = "sk", maxs = max_tokens, is_qa = True, debug_flag = debug_flag,
+        maxa=500, maxc=3500)
 
 app = Flask(__name__)
 
