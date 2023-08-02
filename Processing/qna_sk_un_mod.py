@@ -131,14 +131,16 @@ class QnA(object):
         if os.getenv("OPENAI_API_TYPE") == "azure":
             self.chat = AzureChatOpenAI(
                                 deployment_name="chat",
-                                model_name="gpt-3.5-turbo",
+                                #model_name="gpt-3.5-turbo",
+                                model_name="gpt-4",
                                 temperature=0)
 
             self.ada_engine = "ada"                         # engine for embeddings
 
         else:
             self.chat = ChatOpenAI(
-                                model_name="gpt-3.5-turbo",
+                                #model_name="gpt-3.5-turbo",
+                                model_name="gpt-4",
                                 temperature=0,
                                 openai_api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -509,7 +511,7 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
 
  
         # system message
-        text_part = ["Jsi chytrý AI bot na portále vysokých škol Slovenska a radíš studentům. Odpověz na základě kontextu uživatele. Když nevíš nebo nejsi jistý, odpověz \"Nevím\". Odpověz stručně a výstižně.",
+        text_part = ["Jsi chytrý AI bot na portále vysokých škol Slovenska a radíš studentům. Odpověz na základě kontextu uživatele. Když nevíš nebo nejsi jistý, odpověz \"Nevím\". Odpověz výstižně.",
                      "Kontext:"
             ]
  
@@ -518,13 +520,13 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
                 nf = 94
 
             case "en":
-                text_part = ["You are a smart AI bot on the Slovak university portal and you advise students. Answer the question based on the user's context. If you don't know then respond \"I don't know\". Keep the answer short and concise.",
+                text_part = ["You are a smart AI bot on the Slovak university portal and you advise students. Answer the question based on the user's context. If you don't know then respond \"I don't know\". Keep the answer concise.",
                              "Context:"
                     ]
                 nf = 48
 
             case "sk":
-                text_part = ["Si šikovný AI bot na portáli vysokých škôl Slovenska a radíš študentom. Odpovedz na základe kontextu užívateľa. Keď nevieš alebo nie si istý, odpovedz \"Neviem\". Odpovedz stručne a výstižne.",
+                text_part = ["Si šikovný AI bot na portáli vysokých škôl Slovenska a radíš študentom. Odpovedz na základe kontextu užívateľa. Keď nevieš alebo nie si istý, odpovedz \"Neviem\". Odpovedz výstižne.",
                              "Kontext:"
                     ]
                 nf = 91
