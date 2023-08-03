@@ -43,7 +43,7 @@ class ConverChain(Enum):
     Error = 5           # error 
 
 class DebugFlag(Enum):
-    Context = 1,    # protocol conteq of question
+    Context = 1,    # protocol question context
     Time = 2,       # protocol elapsed time
     Price = 3,      # protocol price paid
     Params = 4,     # protocol question params
@@ -57,8 +57,10 @@ class QnA(object):
     ### Class for question answer system
     ------------------------------------
     #   project - project name
+    #   model - model Chat GPT uset for question/answer by ChatCompletion
+    #           gpt-3.5-turbo - 4,096 tokens, gpt-3.5-turbo-16k - 16,384 tokens, gpt-4 - 8,192 tokens, gpt-4-32k - 32,768 tokens
     #   original_language - original language qdrant text data
-    #   maxs - maximum tokens in segment (chunk)
+    #   maxs - average tokens in segment (chunk). It's used for # of record from Qdrant database
     #   minc - minimum tokens in context
     #   maxc - maximum tokens in context
     #   maxa - maximum tokens of answer
@@ -69,6 +71,7 @@ class QnA(object):
     '''
     def __init__(self,
         project:str,
+        model:str = "gpt-3.5-turbo",
         original_language:str = "cs",
         maxs:int = 500,
         minc:int = 1000,
@@ -93,7 +96,6 @@ class QnA(object):
         self.log_db = log_db            # loging query/answer to Qdrant database(True = yes, False = No)
         self.debug_flag = debug_flag    # debugging flags
 
-        #self.model = "gpt-3.5-turbo-0613"    # OpenAI model (gpt-3.5-turbo)
         self.maxmod = 4096              # maximum tokens of the model in ChatCompletion
         self.model_price_inp = 0.0015   # price of 1000 input tokens
         self.model_price_out = 0.002    # price of 1000 output tokens
@@ -131,18 +133,14 @@ class QnA(object):
         if os.getenv("OPENAI_API_TYPE") == "azure":
             self.chat = AzureChatOpenAI(
                                 deployment_name="chat",
-                                model_name="gpt-3.5-turbo-16k",
-                                #model_name="gpt-3.5-turbo",
-                                #model_name="gpt-4",
+                                model_name=model,
                                 temperature=0)
 
             self.ada_engine = "ada"                         # engine for embeddings
 
         else:
             self.chat = ChatOpenAI(
-                                #model_name="gpt-3.5-turbo",
-                                #model_name="gpt-4",
-                                model_name="gpt-3.5-turbo-16k",
+                                model_name=model,
                                 temperature=0,
                                 openai_api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -511,36 +509,40 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
         if cs_question != question:
             language = detect(question)
 
- 
-        # system message
-        text_part = ["Jsi chytrý AI bot na portále vysokých škol Slovenska a radíš studentům. Odpověz na základě kontextu uživatele. Když nevíš nebo nejsi jistý, odpověz \"Nevím\". Odpověz výstižně.",
-                     "Kontext:"
+        text_part = [
+            "Jsi chytrý AI bot na portálu vysokých škol Slovenska a radíš studentům. Vycházej pouze z tohoto textu, pokud zde odpoved nenajdes, omluv se. Neodpovídej nic co nesouvisí s tímto textem. text: ",
+            "Odpovídej pouze na základě kontextu",
+            "Dobrý den, jsem AI bot, mohu pomoci?"
             ]
  
         match language:
             case "cs":
-                nf = 94
+                nf = 113
 
             case "en":
-                text_part = ["You are a smart AI bot on the Slovak university portal and you advise students. Answer the question based on the user's context. If you don't know then respond \"I don't know\". Keep the answer concise.",
-                             "Context:"
+                text_part = ["You are a smart AI bot on the Slovak university portal and you advise students. Based only on this text, if you don't find the answer here, apologize. Do not answer anything unrelated to this text. text:",
+                             "Answer based on context only",
+                             "Hello, I'm an AI bot, can I help?"
                     ]
-                nf = 48
+                nf = 61
 
             case "sk":
-                text_part = ["Si šikovný AI bot na portáli vysokých škôl Slovenska a radíš študentom. Odpovedz na základe kontextu užívateľa. Keď nevieš alebo nie si istý, odpovedz \"Neviem\". Odpovedz výstižne.",
-                             "Kontext:"
+                text_part = ["Si šikovný AI bot na portáli vysokých škôl Slovenska a radíš študentom. Vychádzaj iba z tohto textu, pokiaľ tu odpoveď nenájdeš, ospravedlň sa. Nezodpovedaj nič čo nesúvisí s týmto textom. text: ",
+                             "Odpovedaj iba na základe kontextu",
+                             "Dobrý deň, som AI bot, môžem pomôcť?"
                     ]
-                nf = 91
+                nf = 128
 
             case _:
                 # in different language is needed translation to language of question
                 text_part = GoogleTranslator(source="cs", target=language).translate_batch(text_part)
                 nf = len(self.encoding.encode(text_part[0] + " " + text_part[1]))
           
-        prompt_frame = text_part[0] + "\n\n" + text_part[1] + "\n"
+        prompt_frame = text_part[0]
+        user_shot = text_part[1]
+        assistant_shot = text_part[2]
 
-        return (prompt_frame, language, nf)
+        return (prompt_frame, user_shot, assistant_shot, language, nf)
 
     def agregate_context(self,
         db_list,            # record list from database
@@ -567,9 +569,15 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
         for record in db_list:
             prefix = ""
             append_chunk = False    # if agreagete chunk will be add to list
+            code = ""
             for title in title_list:
                 if title != "heading":  # heading is included in text
-                    prefix += record.payload[title] + "\n"
+                    if title == "code":
+                        code = record.payload[title]
+                    elif title == "program":
+                        prefix += "Študijný program: " + code + " " + record.payload[title] + ". "
+                    else:
+                        prefix += record.payload[title] + ". "
 
             chunk_len = record.payload["n_tokens"] + 1
             if prefix != prefix_last:
@@ -579,7 +587,7 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
                 if prefix_last != "":
                     append_chunk = True
             else:
-                chunk += "\n\n" + record.payload["text"]
+                chunk += " " + record.payload["text"]
 
             # Add the length of the text to the current length
             cur_len += chunk_len
@@ -659,7 +667,9 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
                 failure = GoogleTranslator(source="sk", target=language).translate(failure)
             return (failure, "")
 
-        context = "\n\n###\n\n".join(returns)
+        context = " ### ".join(returns)
+        context = context.replace("\n\n", " ")
+        context = context.replace("\n", " ").strip()    # Replace single newlines with a space
 
         # If debug, print the raw model response
         if DebugFlag.Context in self.debug_flag:
@@ -774,7 +784,7 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
 
             return answer
 
-        prompt_frame, language, nf = self.get_prompt_parts(question)
+        prompt_frame, user_shot, assistant_shot, language, nf = self.get_prompt_parts(question)
 
         nq = len(self.encoding.encode(question))    # tokens of question
  
@@ -845,6 +855,8 @@ Jaké je IČO <název_firmy>? Odpověď: Kompletní
                     print(f"   Q: {qa_record[0]}\n   A: {qa_record[1]}")
 
         
+        messages_lch.append(HumanMessage(content=user_shot))
+        messages_lch.append(AIMessage(content=assistant_shot))
         messages_lch.append(HumanMessage(content=question))
 
         # ask chat for answer
