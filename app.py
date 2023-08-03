@@ -11,11 +11,15 @@ from Processing.qna_sk_un_mod import QnA, DebugFlag
 
 #project     = "www.multima.cz"      # project name
 project     = "www.portalvs.sk"
-max_tokens  = 500  # maximum tokens in chunk of text (not modify)
 debug_flag = [DebugFlag.Question, DebugFlag.Answer, DebugFlag.Time, DebugFlag.Context, DebugFlag.Params, DebugFlag.Headings]
 
-q = QnA(project = project, original_language = "sk", maxs = max_tokens, is_qa = True, debug_flag = debug_flag,
-        maxa=500, maxc=15700)
+q = QnA(project = project, original_language = "sk",
+        maxs = 230, is_qa = True, debug_flag = debug_flag,
+        model="gpt-3.5-turbo-16k-0613",
+        maxa=500,
+        #maxc=7800,
+        maxc=15800,
+        )
 
 app = Flask(__name__)
 
